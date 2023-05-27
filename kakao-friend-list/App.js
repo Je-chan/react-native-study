@@ -1,24 +1,33 @@
 import { StatusBar } from 'expo-status-bar';
-import {Platform, SafeAreaView, StyleSheet} from 'react-native';
+import {Platform,  StyleSheet} from 'react-native';
 import Header from './src/Header';
-import {getStatusBarHeight, getBottomSpace} from "react-native-iphone-x-helper";
-
-
-const statusBarHeight = getStatusBarHeight(true);
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import MyProfile from "./src/MyProfile";
+import {myProfile} from "./src/data";
+import Margin from "./src/Margin";
 
 export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
-      <Header />
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <SafeAreaView style={{flex: 1}} edges={['right', 'top', 'left']}>
+        <Header />
+
+        <Margin height={10}/>
+
+        <MyProfile
+          uri={myProfile.uri}
+          name={myProfile.name}
+          introduction={myProfile.introduction}
+        />
+      </SafeAreaView>
+    </SafeAreaProvider>
+
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: statusBarHeight,
     backgroundColor: '#fff',
-    justifyContent: 'flex-starts',
   },
 });
