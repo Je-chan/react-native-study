@@ -2,9 +2,11 @@
 import { View, Text, StyleSheet } from 'react-native';
 import {Ionicons} from '@expo/vector-icons'
 const IconBtn = (props) => {
-  return <View>
-    <Ionicons name={props.name} size={24} color="black"/>
-  </View>
+  return (
+    <View style={{paddingHorizontal: 6}}>
+      <Ionicons name={props.name} size={24} color="black"/>
+    </View>
+  )
 }
 
 export default () => {
