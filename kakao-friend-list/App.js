@@ -68,6 +68,8 @@ export default function App() {
     <View style={styles.container}>
       <SafeAreaProvider>
         <SafeAreaView edges={["right", "top", "bottom"]}>
+          {/* Scroll View 는 데이터 양이 많지 않고 고정적일 때 사용 */}
+          {/* Flat List 는 많은 양의 데이터를 렌더링할 때 좋다. 화면에 보이는 것만 렌더링하기 때문에 성능이 좋음*/}
           <FlatList
             data={friendProfiles}
             contentContainerStyle={{ paddingHorizontal: 15 }}
