@@ -1,11 +1,16 @@
 /** @format */
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+
 const IconBtn = (props) => {
   return (
-    <View style={{ paddingHorizontal: 6 }}>
+    <TouchableOpacity
+      // hitSlop 을 사용하면 터치 범위를 늘릴 수 있다
+      hitSlop={{ top: 10, bottom: 10 }}
+      style={{ paddingHorizontal: 6 }}
+    >
       <Ionicons name={props.name} size={24} color="black" />
-    </View>
+    </TouchableOpacity>
   );
 };
 
