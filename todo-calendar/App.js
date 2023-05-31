@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import {
   FlatList,
   SafeAreaView,
@@ -12,6 +11,8 @@ import { getCalendarColumns, getDayColor, getDayText } from "./src/utils";
 import Margin from "./src/Margin";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+
 const COLUMN_SIZE = 35;
 
 const Column = ({ text, color, opacity, disabled, onPress, isSelected }) => {
@@ -49,6 +50,32 @@ export default function App() {
 
   const [selectedDate, setSelectedDate] = useState(now);
 
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  const showDatePicker = () => {
+    console.log("SHOW DATE PICKER");
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirm = (date) => {
+    setSelectedDate(dayjs(date));
+    hideDatePicker();
+  };
+
+  const onPressLeftArrow = () => {
+    const newSelectedDate = dayjs(selectedDate).subtract(1, "month");
+    setSelectedDate(newSelectedDate);
+  };
+
+  const onPressRightArrow = () => {
+    const newSelectedDate = dayjs(selectedDate).add(1, "month");
+    setSelectedDate(newSelectedDate);
+  };
+
   const columns = getCalendarColumns(selectedDate);
 
   const ListHeaderComponent = () => {
@@ -62,15 +89,15 @@ export default function App() {
             alignItems: "center",
           }}
         >
-          <ArrowButton iconNm="arrow-left" />
+          <ArrowButton iconNm="arrow-left" onPress={onPressLeftArrow} />
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={showDatePicker}>
             <Text style={{ fontSize: 20, color: "#404040" }}>
               {currentDateText}
             </Text>
           </TouchableOpacity>
 
-          <ArrowButton iconNm="arrow-right" />
+          <ArrowButton iconNm="arrow-right" onPress={onPressRightArrow} />
         </View>
 
         <View style={{ flexDirection: "row" }}>
@@ -126,6 +153,12 @@ export default function App() {
         numColumns={7}
         ListHeaderComponent={ListHeaderComponent}
         renderItem={renderItem}
+      />
+      <DateTimePickerModal
+        isVisible={isDatePickerVisible}
+        mode="date"
+        onConfirm={handleConfirm}
+        onCancel={hideDatePicker}
       />
     </SafeAreaView>
   );
