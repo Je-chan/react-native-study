@@ -11,20 +11,25 @@ import dayjs from "dayjs";
 import { getCalendarColumns, getDayColor, getDayText } from "./src/utils";
 import Margin from "./src/Margin";
 import { SimpleLineIcons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
 const COLUMN_SIZE = 35;
 
-const Column = ({ text, color, opacity }) => {
+const Column = ({ text, color, opacity, disabled, onPress, isSelected }) => {
   return (
-    <View
+    <TouchableOpacity
+      disabled={disabled}
+      onPress={onPress}
       style={{
         width: COLUMN_SIZE,
         height: COLUMN_SIZE,
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: isSelected ? "#c2c2c2" : "transparent",
+        borderRadius: COLUMN_SIZE / 2,
       }}
     >
       <Text style={{ color, opacity }}>{text}</Text>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -41,9 +46,13 @@ const ArrowButton = ({ iconNm, onPress }) => {
 
 export default function App() {
   const now = dayjs();
-  const columns = getCalendarColumns(now);
+
+  const [selectedDate, setSelectedDate] = useState(now);
+
+  const columns = getCalendarColumns(selectedDate);
+
   const ListHeaderComponent = () => {
-    const currentDateText = dayjs(now).format("YYYY.MM.DD");
+    const currentDateText = dayjs(selectedDate).format("YYYY.MM.DD");
     return (
       <View>
         <View
@@ -69,7 +78,13 @@ export default function App() {
             const dateText = getDayText(day);
             const color = getDayColor(day);
             return (
-              <Column key={day} text={dateText} color={color} opacity={1} />
+              <Column
+                key={day}
+                text={dateText}
+                color={color}
+                opacity={1}
+                disabled={true}
+              />
             );
           })}
         </View>
@@ -81,15 +96,26 @@ export default function App() {
     const dateText = dayjs(date).get("date");
     const day = dayjs(date).get("day");
     const color = day === 0 ? "#e67639" : day === 6 ? "#5872d1" : "#2b2b2b";
-    const isCurrentMonth = dayjs(date).isSame(now, "month");
+    const isCurrentMonth = dayjs(date).isSame(selectedDate, "month");
+    const onPress = () => {
+      setSelectedDate(date);
+    };
+
+    const isSelected = dayjs(date).isSame(selectedDate, "date");
     return (
       <Column
         text={dateText}
         color={color}
         opacity={isCurrentMonth ? 1 : 0.4}
+        onPress={onPress}
+        isSelected={isSelected}
       />
     );
   };
+
+  useEffect(() => {
+    console.log("changed selecteDate");
+  }, [selectedDate]);
 
   return (
     <SafeAreaView style={styles.container}>
