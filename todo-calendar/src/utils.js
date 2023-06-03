@@ -9,6 +9,8 @@ import {
   getBottomSpace,
 } from "react-native-iphone-x-helper";
 
+
+
 export const statusBarHeight = getStatusBarHeight(true);
 export const bottomSpace = getBottomSpace();
 export const ITEM_WIDTH = 220;
