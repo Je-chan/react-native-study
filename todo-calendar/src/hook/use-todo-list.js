@@ -35,7 +35,7 @@ export const useTodoList = (selectedDate) => {
             ? todoList.reduce((acc, cur) => {
                 if (acc < cur) return cur;
                 else return acc;
-              }, 0) + 1
+              }, 0) + 2
             : 0,
         content: input,
         date: selectedDate,
@@ -59,6 +59,8 @@ export const useTodoList = (selectedDate) => {
     setTodoList(newTodoList);
   };
 
+  const resetInput = () => setInput("")
+
   return {
     todoList,
 
@@ -68,5 +70,7 @@ export const useTodoList = (selectedDate) => {
     addTodo,
     removeTodo,
     toggleTodo,
+
+    resetInput,
   };
 };

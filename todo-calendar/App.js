@@ -5,7 +5,7 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Image, KeyboardAvoidingView, Platform, Pressable, Keyboard
+  Image, KeyboardAvoidingView, Platform, Pressable, Keyboard, Alert
 } from "react-native";
 import dayjs from "dayjs";
 import {bottomSpace, getCalendarColumns, getDayColor, getDayText, ITEM_WIDTH, statusBarHeight} from "./src/utils";
@@ -17,6 +17,7 @@ import {Ionicons} from '@expo/vector-icons'
 import Calendar from "./src/Calendar";
 import Margin from "./src/Margin";
 import AddTodoInput from "./src/AddTodoInput";
+import {useRef} from "react";
 
 export default function App() {
   const now = dayjs();
@@ -37,10 +38,16 @@ export default function App() {
   const {
     todoList,
     input,
-    setInput
+    setInput,
+    addTodo,
+    removeTodo,
+    toggleTodo,
+    resetInput
   } = useTodoList(selectedDate)
 
   const columns = getCalendarColumns(selectedDate);
+
+  const flatListRef = useRef(null)
 
   const onPressLeftArrow = subtract1Month;
   const onPressHeaderDate = showDatePicker
@@ -75,16 +82,31 @@ export default function App() {
 
   const renderItem = ({item: todo}) => {
     const isSuccess = todo.isSuccess
-
+    const onPress = () => toggleTodo(todo.id)
+    const onLongPress = () => {
+      Alert.alert("삭제하시겠습니까?", "" , [
+        {
+          style: "cancel",
+          text: "아니요"
+        },
+        {
+          text: "네",
+          onPress: () => removeTodo(todo.id)
+        }
+      ])
+    }
     return (
-      <View style={{
-        flexDirection: "row",
-        width: ITEM_WIDTH,
-        alignSelf: "center",
-        paddingVertical: 10,
-        paddingHorizontal: 5,
-        borderBottomWidth: 0.2,
-        borderColor: "#a6a6a6"
+      <Pressable
+        onPress={onPress}
+        onLongPress={onLongPress}
+        style={{
+          flexDirection: "row",
+          width: ITEM_WIDTH,
+          alignSelf: "center",
+          paddingVertical: 10,
+          paddingHorizontal: 5,
+          borderBottomWidth: 0.2,
+          borderColor: "#a6a6a6"
       }}>
         <Text style={{ flex: 1, fontSize: 14, color:"#595959"}}>{todo.content}</Text>
         <Ionicons
@@ -92,12 +114,27 @@ export default function App() {
           size={17}
           color={isSuccess ? "#595959" : "#bfbfbf" }
         />
-      </View>
+      </Pressable>
     )
   }
 
-  const onPressAdd = () => {}
+  const onPressAdd = () => {
+    addTodo();
+    resetInput()
+    onFocus()
+  }
 
+  const onSubmitEditing = () => {
+    addTodo()
+    resetInput()
+  }
+
+  const onFocus = () => {
+    setTimeout(() => {
+
+      flatListRef.current?.scrollToEnd()
+    }, 300)
+  }
   return (
     <Pressable style={styles.container} onPress={Keyboard.dismiss}>
       <Image
@@ -114,21 +151,26 @@ export default function App() {
       <KeyboardAvoidingView
          behavior={Platform.OS === 'ios' ? 'padding' : "height"}
       >
-        <FlatList
-          data={todoList}
-          ListHeaderComponent={ListHeaderComponent}
-          contentContainerStyle={{paddingTop: statusBarHeight}}
-          renderItem={renderItem} />
+        <>
+          <FlatList
+            ref={flatListRef}
+            data={todoList}
+            stlye={{flex: 1}}
+            ListHeaderComponent={ListHeaderComponent}
+            contentContainerStyle={{paddingTop: statusBarHeight + 30}}
+            renderItem={renderItem} />
 
-        <AddTodoInput
-          value={input}
-          onChangeText={setInput}
-          placeholder={`${dayjs(selectedDate).format('MM.DD')}에 추가할 ToDo`}
-          onPressAdd={onPressAdd}
-        />
+          <AddTodoInput
+            value={input}
+            onChangeText={setInput}
+            placeholder={`${dayjs(selectedDate).format('MM.DD')}에 추가할 ToDo`}
+            onPressAdd={onPressAdd}
+            onSubmitEditing={onSubmitEditing}
+          />
+        </>
       </KeyboardAvoidingView>
 
-      <Margin height={ }/>
+      <Margin height={bottomSpace}/>
 
       <DateTimePickerModal
         isVisible={isDatePickerVisible}

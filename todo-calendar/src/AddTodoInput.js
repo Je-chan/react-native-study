@@ -7,8 +7,12 @@ export default ({
 	value,
 	onChangeText,
 	placeholder = '',
-	onPressAdd
+	onPressAdd,
+	onSubmitEditing,
+	onFocus
 }) => {
+	// 수정이 끝났을 떄 동작하는 함수가 onSubmitEditing
+	// 수정이 끝났을 때 키보드를 내릴지 말지 결정하는 Props 가 blurOnSubmit
 	return (
 		<View style={{
 			width: ITEM_WIDTH,
@@ -24,8 +28,10 @@ export default ({
 					flex: 1,
 					padding: 5,
 					color: "#595959"
-
 				}}
+				onSubmitEditing={onSubmitEditing}
+				blurOnSubmit={false}
+				onFocus={onFocus}
 			/>
 
 			<TouchableOpacity style={{
