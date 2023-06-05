@@ -3,7 +3,7 @@ import {SafeAreaView, SectionList, StyleSheet, Text, View} from 'react-native';
 import BusInfo from "./src/BusInfo";
 import {COLOR} from "./src/color";
 import {busStop, getBusNumColorByType, getRemainedTimeText, getSeatStatusText, getSections} from "./src/data";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import dayjs from "dayjs";
 
 export default function App() {
@@ -47,6 +47,18 @@ export default function App() {
       />
     )
   }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newNow = dayjs();
+      setNow(newNow)
+    }, 1000)
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <SectionList
