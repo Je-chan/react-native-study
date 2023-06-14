@@ -1,4 +1,4 @@
-import {SafeAreaView, SectionList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {RefreshControl, SafeAreaView, SectionList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import BusInfo from "./src/BusInfo";
 import {COLOR} from "./src/color";
 import {busStop, getBusNumColorByType, getRemainedTimeText, getSeatStatusText, getSections} from "./src/data";
@@ -14,27 +14,17 @@ const busStopBookmarkPadding = 6
 export default function App() {
   const sections = getSections(busStop.buses)
   const [now, setNow] = useState(dayjs());
+  const [refreshing, setRefreshing] = useState(false)
 
   const ListHeaderComponent = () => {
     const onPressBusStopBookmark = () => {
       console.log("here")
     }
     return (
-      <SafeAreaView style={{backgroundColor: COLOR.GRAY_3, height: 250}}>
-        {/* 뒤로 가기, 홈 아이콘*/}
-        <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-          <TouchableOpacity style={{padding: 10}}>
-            <SimpleLineIcons name={"arrow-left"} size={20} color={COLOR.WHITE} />
-          </TouchableOpacity>
-          <TouchableOpacity style={{padding: 10}}>
-            <SimpleLineIcons name={"home"} size={20} color={COLOR.WHITE} />
-          </TouchableOpacity>
-        </View>
-
+      <View style={{backgroundColor: COLOR.GRAY_3, height: 170, justifyContent: "center", alignItems: "center"}}>
         {/* 정류소 번호, 이름, 방향*/}
-        <View style={{justifyContent: "center", alignItems: "center"}}>
-          <Margin height={4} />
 
+          <Margin height={10}/>
           <Text style={{color: COLOR.WHITE, fontSize: 11}}>{busStop.id}</Text>
           <Margin height={4} />
 
@@ -56,11 +46,7 @@ export default function App() {
               padding: busStopBookmarkPadding
             }}
           />
-          <Margin height={25}/>
-        </View>
-
-
-      </SafeAreaView>
+      </View>
     )
   }
    const renderSectionHeader = ({section: {title}}) => {
@@ -129,19 +115,56 @@ export default function App() {
     )
   }
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     const newNow = dayjs();
-  //     setNow(newNow)
-  //   }, 1000)
-  //
-  //   return () => {
-  //     clearInterval(interval)
-  //   }
-  // }, []);
+  const onRefresh = () => {
+    setRefreshing(true)
+  }
+
+  useEffect(() => {
+    if(refreshing) {
+      // API Refetch 가 완료되는 시점
+      setTimeout(() => {
+        setRefreshing(false)
+        setNow(dayjs())
+      }, 300)
+    }
+  }, [refreshing]);
+
+
+  useEffect(()  => {
+    const interval = setInterval(() => {
+      const newNow = dayjs()
+      setNow(newNow)
+    }, 1000)
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, []);
+
+
 
   return (
     <View style={styles.container}>
+      {/* 뒤로 가기, 홈 아이콘*/}
+      <View style={{backgroundColor: COLOR.GRAY_3, width: '100%'}}>
+        <SafeAreaView style={{flexDirection: "row", justifyContent: "space-between"}}>
+          <TouchableOpacity style={{padding: 10}}>
+            <SimpleLineIcons name={"arrow-left"} size={20} color={COLOR.WHITE} />
+          </TouchableOpacity>
+          <TouchableOpacity style={{padding: 10}}>
+            <SimpleLineIcons name={"home"} size={20} color={COLOR.WHITE} />
+          </TouchableOpacity>
+        </SafeAreaView>
+        <View style={{
+          position: "absolute",
+          width: "100%",
+          height: 500,
+          backgroundColor: COLOR.GRAY_3,
+          zIndex: -1
+        }}></View>
+
+      </View>
+
       <SectionList
         style={{flex: 1, width: "100%"}}
         sections={sections}
@@ -150,6 +173,12 @@ export default function App() {
         renderItem={renderItem}
         ItemSeparatorComponent={ItemSeparatorComponent}
         ListFooterComponent={ListFooterComponent}
+        refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+        }
       />
 
     </View>
