@@ -22,12 +22,7 @@ export default function BottomTabNavigation() {
           };
 
           const iconName = getIconName();
-          return (
-            <TabIcon
-              iconName={iconName}
-              iconColor={focused ? "tomato" : "gray"}
-            ></TabIcon>
-          );
+          return <TabIcon iconName={iconName} iconColor={color}></TabIcon>;
         },
       })}
     >
