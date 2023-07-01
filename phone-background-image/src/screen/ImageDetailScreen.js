@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { useWindowDimensions, View } from "react-native";
+import React, { useCallback, useState } from "react";
+import { ActivityIndicator, useWindowDimensions, View } from "react-native";
 import Header from "../components/Header";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { RemoteImage } from "../components/RemoteImage";
@@ -12,8 +12,10 @@ import * as MediaLibrary from "expo-media-library";
 export default function ImageDetailScreen(props) {
   const navigation = useNavigation();
   const route = useRoute();
-
+  const [downloading, setDownloading] = useState(false);
   const onPressDownload = useCallback(async () => {
+    setDownloading(true);
+
     const downloadResumable = FileSystem.createDownloadResumable(
       route.params.url,
       `${FileSystem.documentDirectory}${new Date().getMilliseconds()}.jpg`
@@ -50,6 +52,8 @@ export default function ImageDetailScreen(props) {
       console.log(album);
     } catch (err) {
       console.log(err);
+    } finally {
+      setDownloading(false);
     }
   }, []);
 
@@ -75,19 +79,32 @@ export default function ImageDetailScreen(props) {
 
       <Button onPress={onPressDownload}>
         <View style={{ paddingBottom: 24, backgroundColor: "black" }}>
-          <View
-            style={{
-              height: 52,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Typography fontSize={14} color={"white"}>
-              DOWNLOAD
-            </Typography>
-            <Icon name={"download"} size={24} color={"white"}></Icon>
-          </View>
+          {downloading ? (
+            <View
+              style={{
+                height: 52,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <ActivityIndicator />
+            </View>
+          ) : (
+            <View
+              style={{
+                height: 52,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Typography fontSize={14} color={"white"}>
+                DOWNLOAD
+              </Typography>
+              <Icon name={"download"} size={24} color={"white"}></Icon>
+            </View>
+          )}
         </View>
       </Button>
     </View>
