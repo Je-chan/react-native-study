@@ -3,7 +3,6 @@ import { Badge } from "./Badge";
 import { Icon } from "./Icons";
 
 export const TabIcon = (props) => {
-  console.log(props);
   if (props.visibleBadge) {
     return (
       <Badge fontSize={10}>
